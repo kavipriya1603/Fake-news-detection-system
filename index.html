@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fake News Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📰 Fake News Detector</h1>
+            <p>Enter news content to verify its authenticity.</p>
+            <form id="newsForm">
+                <textarea id="news" name="news" placeholder="Paste your news article here..." required></textarea>
+                <button type="submit">Check News</button>
+            </form>
+            <div id="resultBox" class="result-box"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("newsForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const newsContent = document.getElementById("news").value;
+            const formData = new FormData();
+            formData.append("news", newsContent);
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            const resultBox = document.getElementById("resultBox");
+
+            if (data.prediction === "Real News") {
+                resultBox.className = "result-box real show";
+                resultBox.innerText = "✅ This is Real News.";
+            } else {
+                resultBox.className = "result-box fake show";
+                resultBox.innerText = "🚫 This is Fake News.";
+            }
+        });
+    </script>
+</body>
+</html>
